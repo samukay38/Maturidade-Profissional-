@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserData, Answers, ReportData, Question, Pillar, WEIGHTS } from './types';
+import { UserData, Answers, ReportData, Question, Pillar, WEIGHTS, EvaluationType } from './types';
 import { generateHardSkillsQuestions, generateReportAnalysis } from './services/geminiService';
 import { Button } from './components/Button';
 import { 
@@ -15,101 +15,121 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
-// --- Static Questions Data (2 per pillar) ---
-const STATIC_QUESTIONS_DEFINITIONS = [
-  // AUTONOMY
-  {
-    id: 'autonomy_1',
-    pillar: Pillar.AUTONOMY,
-    title: 'Autonomia: Gestão da Tarefa',
-    description: 'Como você lida quando recebe uma nova demanda?',
-    options: [
-      { level: 1, text: "Preciso de passo-a-passo detalhado. Paro ao encontrar obstáculos." },
-      { level: 3, text: "Recebo o objetivo macro e defino o 'como'. Trago soluções." },
-      { level: 5, text: "Antecipo demandas e defino a própria agenda estratégica." },
-    ]
-  },
-  {
-    id: 'autonomy_2',
-    pillar: Pillar.AUTONOMY,
-    title: 'Autonomia: Iniciativa',
-    description: 'Qual sua postura diante de problemas não mapeados?',
-    options: [
-      { level: 1, text: "Aguardo instruções ou reporto o problema sem investigar." },
-      { level: 3, text: "Investigo a causa raiz e proponho correções." },
-      { level: 5, text: "Resolvo o problema e crio processos para que não se repita." },
-    ]
-  },
-  // IMPACT
-  {
-    id: 'impact_1',
-    pillar: Pillar.IMPACT,
-    title: 'Impacto: Entregável',
-    description: 'O que define a conclusão do seu trabalho?',
-    options: [
-      { level: 1, text: "A tarefa foi marcada como concluída (output)." },
-      { level: 3, text: "O problema do usuário/cliente foi resolvido (outcome)." },
-      { level: 5, text: "O indicador de negócio (receita/economia) melhorou." },
-    ]
-  },
-  {
-    id: 'impact_2',
-    pillar: Pillar.IMPACT,
-    title: 'Impacto: Alcance',
-    description: 'Quem é beneficiado pelo seu trabalho?',
-    options: [
-      { level: 1, text: "Apenas minha própria fila de tarefas." },
-      { level: 3, text: "Meu time direto e stakeholders próximos." },
-      { level: 5, text: "Múltiplas áreas ou a organização como um todo." },
-    ]
-  },
-  // SOFT SKILLS
-  {
-    id: 'soft_skills_1',
-    pillar: Pillar.SOFT_SKILLS,
-    title: 'Convivência: Pressão',
-    description: 'Como você reage sob pressão ou críticas?',
-    options: [
-      { level: 1, text: "Fico na defensiva ou busco culpados externos." },
-      { level: 3, text: "Absorvo a crítica, filtro o útil e ajusto a rota." },
-      { level: 5, text: "Mantenho a calma e ajudo o time a focar na solução." },
-    ]
-  },
-  {
-    id: 'soft_skills_2',
-    pillar: Pillar.SOFT_SKILLS,
-    title: 'Convivência: Colaboração',
-    description: 'Como é sua interação com pares?',
-    options: [
-      { level: 1, text: "Prefiro trabalhar isolado (silo)." },
-      { level: 3, text: "Colaboro ativamente quando solicitado." },
-      { level: 5, text: "Desbloqueio os outros e promovo união no time." },
-    ]
-  },
-  // CONSISTENCY
-  {
-    id: 'consistency_1',
-    pillar: Pillar.CONSISTENCY,
-    title: 'Consistência: Frequência',
-    description: 'Qual a estabilidade das suas entregas?',
-    options: [
-      { level: 1, text: "Oscila muito (montanha-russa)." },
-      { level: 3, text: "Estável. Entrego o combinado nos prazos." },
-      { level: 5, text: "Previsível e Excepcional há mais de 6 meses." },
-    ]
-  },
-  {
-    id: 'consistency_2',
-    pillar: Pillar.CONSISTENCY,
-    title: 'Consistência: Confiabilidade',
-    description: 'Seu líder precisa microgerenciar você?',
-    options: [
-      { level: 1, text: "Sim, precisa cobrar prazos e qualidade frequentemente." },
-      { level: 3, text: "Não, ele confia que avisarei se algo der errado." },
-      { level: 5, text: "Sou eu quem gerencia as expectativas do líder." },
-    ]
-  }
-];
+// --- Dynamic Questions Data based on Type ---
+const getStaticQuestions = (type: EvaluationType) => {
+  const isLeader = type === 'leader';
+
+  return [
+    // AUTONOMY
+    {
+      id: 'autonomy_1',
+      pillar: Pillar.AUTONOMY,
+      title: 'Autonomia: Gestão da Tarefa',
+      description: isLeader 
+        ? 'Como o colaborador lida quando recebe uma nova demanda?' 
+        : 'Como você lida quando recebe uma nova demanda?',
+      options: [
+        { level: 1, text: isLeader ? "Precisa de passo-a-passo detalhado. Para ao encontrar obstáculos." : "Preciso de passo-a-passo detalhado. Paro ao encontrar obstáculos." },
+        { level: 3, text: isLeader ? "Recebe o objetivo macro e define o 'como'. Traz soluções." : "Recebo o objetivo macro e defino o 'como'. Trago soluções." },
+        { level: 5, text: isLeader ? "Antecipa demandas e define a própria agenda estratégica." : "Antecipo demandas e defino a própria agenda estratégica." },
+      ]
+    },
+    {
+      id: 'autonomy_2',
+      pillar: Pillar.AUTONOMY,
+      title: 'Autonomia: Iniciativa',
+      description: isLeader 
+        ? 'Qual a postura dele(a) diante de problemas não mapeados?'
+        : 'Qual sua postura diante de problemas não mapeados?',
+      options: [
+        { level: 1, text: isLeader ? "Aguarda instruções ou reporta o problema sem investigar." : "Aguardo instruções ou reporto o problema sem investigar." },
+        { level: 3, text: isLeader ? "Investiga a causa raiz e propõe correções." : "Investigo a causa raiz e proponho correções." },
+        { level: 5, text: isLeader ? "Resolve o problema e cria processos para que não se repita." : "Resolvo o problema e crio processos para que não se repita." },
+      ]
+    },
+    // IMPACT
+    {
+      id: 'impact_1',
+      pillar: Pillar.IMPACT,
+      title: 'Impacto: Entregável',
+      description: isLeader 
+        ? 'O que define a conclusão do trabalho dele(a)?'
+        : 'O que define a conclusão do seu trabalho?',
+      options: [
+        { level: 1, text: "A tarefa foi marcada como concluída (output)." },
+        { level: 3, text: "O problema do usuário/cliente foi resolvido (outcome)." },
+        { level: 5, text: "O indicador de negócio (receita/economia) melhorou." },
+      ]
+    },
+    {
+      id: 'impact_2',
+      pillar: Pillar.IMPACT,
+      title: 'Impacto: Alcance',
+      description: isLeader 
+        ? 'Quem é beneficiado pelo trabalho dele(a)?'
+        : 'Quem é beneficiado pelo seu trabalho?',
+      options: [
+        { level: 1, text: isLeader ? "Apenas a própria fila de tarefas." : "Apenas minha própria fila de tarefas." },
+        { level: 3, text: isLeader ? "O time direto e stakeholders próximos." : "Meu time direto e stakeholders próximos." },
+        { level: 5, text: "Múltiplas áreas ou a organização como um todo." },
+      ]
+    },
+    // SOFT SKILLS
+    {
+      id: 'soft_skills_1',
+      pillar: Pillar.SOFT_SKILLS,
+      title: 'Convivência: Pressão',
+      description: isLeader 
+        ? 'Como ele(a) reage sob pressão ou críticas?'
+        : 'Como você reage sob pressão ou críticas?',
+      options: [
+        { level: 1, text: isLeader ? "Fica na defensiva ou busca culpados externos." : "Fico na defensiva ou busco culpados externos." },
+        { level: 3, text: isLeader ? "Absorve a crítica, filtra o útil e ajusta a rota." : "Absorvo a crítica, filtro o útil e ajusto a rota." },
+        { level: 5, text: isLeader ? "Mantém a calma e ajuda o time a focar na solução." : "Mantenho a calma e ajudo o time a focar na solução." },
+      ]
+    },
+    {
+      id: 'soft_skills_2',
+      pillar: Pillar.SOFT_SKILLS,
+      title: 'Convivência: Colaboração',
+      description: isLeader 
+        ? 'Como é a interação dele(a) com pares?'
+        : 'Como é sua interação com pares?',
+      options: [
+        { level: 1, text: isLeader ? "Prefere trabalhar isolado (silo)." : "Prefiro trabalhar isolado (silo)." },
+        { level: 3, text: isLeader ? "Colabora ativamente quando solicitado." : "Colaboro ativamente quando solicitado." },
+        { level: 5, text: isLeader ? "Desbloqueia os outros e promove união no time." : "Desbloqueio os outros e promovo união no time." },
+      ]
+    },
+    // CONSISTENCY
+    {
+      id: 'consistency_1',
+      pillar: Pillar.CONSISTENCY,
+      title: 'Consistência: Frequência',
+      description: isLeader 
+        ? 'Qual a estabilidade das entregas dele(a)?'
+        : 'Qual a estabilidade das suas entregas?',
+      options: [
+        { level: 1, text: "Oscila muito (montanha-russa)." },
+        { level: 3, text: isLeader ? "Estável. Entrega o combinado nos prazos." : "Estável. Entrego o combinado nos prazos." },
+        { level: 5, text: isLeader ? "Previsível e Excepcional há mais de 6 meses." : "Previsível e Excepcional há mais de 6 meses." },
+      ]
+    },
+    {
+      id: 'consistency_2',
+      pillar: Pillar.CONSISTENCY,
+      title: 'Consistência: Confiabilidade',
+      description: isLeader 
+        ? 'Você precisa microgerenciar o colaborador?'
+        : 'Seu líder precisa microgerenciar você?',
+      options: [
+        { level: 1, text: isLeader ? "Sim, preciso cobrar prazos e qualidade frequentemente." : "Sim, precisa cobrar prazos e qualidade frequentemente." },
+        { level: 3, text: isLeader ? "Não, confio que ele(a) avisará se algo der errado." : "Não, ele confia que avisarei se algo der errado." },
+        { level: 5, text: isLeader ? "É ele(a) quem gerencia minhas expectativas." : "Sou eu quem gerencia as expectativas do líder." },
+      ]
+    }
+  ];
+};
 
 const App: React.FC = () => {
   // State
@@ -126,8 +146,8 @@ const App: React.FC = () => {
     setStep('loading_questions');
 
     try {
-      // Fetch dynamic hard skills (now returns 2 questions)
-      const hardSkillsData = await generateHardSkillsQuestions(userData.role);
+      // Fetch dynamic hard skills (now returns 2 questions) and pass evaluation type
+      const hardSkillsData = await generateHardSkillsQuestions(userData.role, userData.type);
       
       const hsQ1: Question = {
         id: 'hard_skills_1',
@@ -145,17 +165,20 @@ const App: React.FC = () => {
         options: hardSkillsData.q2.options.map(opt => ({ ...opt, level: opt.level as 1|3|5 }))
       };
 
-      // Build full list (2 HS + 8 Static = 10 questions)
-      const fullQuestions: Question[] = [
-        hsQ1,
-        hsQ2,
-        ...STATIC_QUESTIONS_DEFINITIONS.map(q => ({
+      // Get Static questions adapted for self or leader
+      const staticQuestions = getStaticQuestions(userData.type).map(q => ({
           id: q.id,
           pillar: q.pillar,
           title: q.title,
           description: q.description,
           options: q.options.map(opt => ({...opt, level: opt.level as 1|3|5}))
-        }))
+      }));
+
+      // Build full list (2 HS + 8 Static = 10 questions)
+      const fullQuestions: Question[] = [
+        hsQ1,
+        hsQ2,
+        ...staticQuestions
       ];
 
       setQuestions(fullQuestions);

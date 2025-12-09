@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
-import { UserData, Answers, ReportData, Pillar } from "../types";
+import { UserData, Answers, ReportData, Pillar, EvaluationType } from "../types";
 
 const apiKey = process.env.API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
@@ -21,24 +21,26 @@ export interface HardSkillsQuestion {
 // ---------------------------------------------------------
 // 1. GERADOR DE PERGUNTAS TÉCNICAS (Gera 2 cenários)
 // ---------------------------------------------------------
-export const generateHardSkillsQuestions = async (role: string): Promise<{ q1: HardSkillsQuestion, q2: HardSkillsQuestion }> => {
+export const generateHardSkillsQuestions = async (role: string, type: EvaluationType): Promise<{ q1: HardSkillsQuestion, q2: HardSkillsQuestion }> => {
+  const isLeader = type === 'leader';
+  
   if (!apiKey) {
-    // Fallback para dev
+    // Fallback para dev com suporte a leader/self
     return {
       q1: {
         questionTitle: "Execução Técnica",
         options: [
-          { level: 1, text: "Preciso de ajuda frequente para executar as tarefas básicas." },
-          { level: 3, text: "Executo com autonomia e sem erros as demandas do dia a dia." },
-          { level: 5, text: "Sou referência técnica e crio novos padrões para o time." }
+          { level: 1, text: isLeader ? "Precisa de ajuda frequente para executar as tarefas básicas." : "Preciso de ajuda frequente para executar as tarefas básicas." },
+          { level: 3, text: isLeader ? "Executa com autonomia e sem erros as demandas do dia a dia." : "Executo com autonomia e sem erros as demandas do dia a dia." },
+          { level: 5, text: isLeader ? "É referência técnica e cria novos padrões para o time." : "Sou referência técnica e crio novos padrões para o time." }
         ]
       },
       q2: {
         questionTitle: "Resolução de Problemas Técnicos",
         options: [
-          { level: 1, text: "Escalo problemas técnicos imediatamente ao encontrar erros." },
-          { level: 3, text: "Investigo e resolvo a maioria dos bugs/problemas sozinho." },
-          { level: 5, text: "Antecipo falhas sistêmicas e previno erros antes que ocorram." }
+          { level: 1, text: isLeader ? "Escala problemas técnicos imediatamente ao encontrar erros." : "Escalo problemas técnicos imediatamente ao encontrar erros." },
+          { level: 3, text: isLeader ? "Investiga e resolve a maioria dos bugs/problemas sozinho." : "Investigo e resolvo a maioria dos bugs/problemas sozinho." },
+          { level: 5, text: isLeader ? "Antecipa falhas sistêmicas e previne erros antes que ocorram." : "Antecipo falhas sistêmicas e previno erros antes que ocorram." }
         ]
       }
     };
@@ -90,6 +92,10 @@ export const generateHardSkillsQuestions = async (role: string): Promise<{ q1: H
   };
 
   try {
+    const personInstruction = isLeader 
+      ? "As opções devem ser na terceira pessoa ('O colaborador...', 'Ele/Ela...'). Perguntas sobre 'o colaborador'."
+      : "As opções devem ser na primeira pessoa ('Eu...').";
+
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
       contents: `Contexto: Avaliação de Hard Skills para o cargo: "${role}".
@@ -99,7 +105,7 @@ export const generateHardSkillsQuestions = async (role: string): Promise<{ q1: H
       - PERGUNTA 1: Deve avaliar a capacidade de EXECUÇÃO (fazer a tarefa).
       - PERGUNTA 2: Deve avaliar a capacidade de INOVAÇÃO/ENSINO (melhorar a técnica ou ensinar outros).
       
-      As opções devem ser na primeira pessoa ("Eu...").`,
+      ${personInstruction}`,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
         responseMimeType: "application/json",
@@ -175,6 +181,7 @@ export const generateReportAnalysis = async (userData: UserData, rawAnswers: Rec
   **INSTRUÇÃO:**
   Gere um feedback curto e poderoso.
   Identifique discrepâncias (ex: Alta técnica mas baixa soft skill).
+  Trate o avaliado como "ele/ela" se for avaliação de liderança, ou "você" se for autoavaliação.
   
   FORMATO MARKDOWN OBRIGATÓRIO:
   ## 🎯 Diagnóstico Estratégico
