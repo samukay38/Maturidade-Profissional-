@@ -274,57 +274,59 @@ const App: React.FC = () => {
   if (step === 'welcome') {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-[url('https://picsum.photos/1920/1080?grayscale&blur=5')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm" />
-        <div className="relative max-w-lg w-full bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
+        {/* Changed from slate-900 to blue-950 */}
+        <div className="absolute inset-0 bg-blue-950/90 backdrop-blur-sm" />
+        {/* Changed from slate-800 to blue-900 */}
+        <div className="relative max-w-lg w-full bg-blue-900 p-8 rounded-2xl shadow-2xl border border-blue-800">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30">
               <Activity className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">GPS de Carreira</h1>
-            <p className="text-slate-400">Mapeamento de Maturidade Profissional</p>
+            <p className="text-blue-200">Mapeamento de Maturidade Profissional</p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Seu Nome</label>
+              <label className="block text-sm font-medium text-blue-200 mb-1">Seu Nome</label>
               <div className="relative">
-                <UserCircle className="absolute left-3 top-3 text-slate-500 w-5 h-5" />
+                <UserCircle className="absolute left-3 top-3 text-blue-400 w-5 h-5" />
                 <input 
                   type="text" 
                   value={userData.name}
                   onChange={e => setUserData({...userData, name: e.target.value})}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                  className="w-full bg-blue-950 border border-blue-800 rounded-xl py-3 pl-10 pr-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder-blue-400/50"
                   placeholder="Ex: João Silva"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Seu Cargo Atual</label>
+              <label className="block text-sm font-medium text-blue-200 mb-1">Seu Cargo Atual</label>
               <div className="relative">
-                <Briefcase className="absolute left-3 top-3 text-slate-500 w-5 h-5" />
+                <Briefcase className="absolute left-3 top-3 text-blue-400 w-5 h-5" />
                 <input 
                   type="text" 
                   value={userData.role}
                   onChange={e => setUserData({...userData, role: e.target.value})}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                  className="w-full bg-blue-950 border border-blue-800 rounded-xl py-3 pl-10 pr-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder-blue-400/50"
                   placeholder="Ex: Desenvolvedor React Sênior"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Tipo de Avaliação</label>
+              <label className="block text-sm font-medium text-blue-200 mb-2">Tipo de Avaliação</label>
               <div className="grid grid-cols-2 gap-3">
                 <button 
                   onClick={() => setUserData({...userData, type: 'self'})}
-                  className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${userData.type === 'self' ? 'bg-indigo-600/20 border-indigo-500 text-white' : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'}`}
+                  className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${userData.type === 'self' ? 'bg-indigo-600/20 border-indigo-500 text-white' : 'bg-blue-950 border-blue-800 text-blue-300 hover:border-blue-600'}`}
                 >
                   Autoavaliação
                 </button>
                 <button 
                   onClick={() => setUserData({...userData, type: 'leader'})}
-                  className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${userData.type === 'leader' ? 'bg-indigo-600/20 border-indigo-500 text-white' : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'}`}
+                  className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${userData.type === 'leader' ? 'bg-indigo-600/20 border-indigo-500 text-white' : 'bg-blue-950 border-blue-800 text-blue-300 hover:border-blue-600'}`}
                 >
                   Líder Avaliando
                 </button>
@@ -347,12 +349,12 @@ const App: React.FC = () => {
 
   if (step === 'loading_questions' || step === 'calculating') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-blue-950 text-white p-4">
         <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-6"></div>
         <h2 className="text-xl font-semibold animate-pulse">
           {step === 'loading_questions' ? 'Calibrando régua de avaliação...' : 'Processando diagnóstico completo...'}
         </h2>
-        <p className="text-slate-400 mt-2 text-center max-w-md">
+        <p className="text-blue-300 mt-2 text-center max-w-md">
           {step === 'loading_questions' ? 'A inteligência artificial está gerando critérios específicos para o seu cargo.' : 'Calculando score ponderado e gerando plano de ação personalizado.'}
         </p>
       </div>
@@ -365,15 +367,15 @@ const App: React.FC = () => {
     const progress = questions.length > 0 ? ((currentQuestionIndex) / questions.length) * 100 : 0;
 
     return (
-      <div className="min-h-screen bg-slate-900 text-white flex flex-col">
-        {/* Header */}
-        <div className="w-full bg-slate-800 p-4 sticky top-0 z-10 border-b border-slate-700">
+      <div className="min-h-screen bg-blue-950 text-white flex flex-col">
+        {/* Header - bg-blue-900 */}
+        <div className="w-full bg-blue-900 p-4 sticky top-0 z-10 border-b border-blue-800">
           <div className="max-w-3xl mx-auto">
-            <div className="flex justify-between items-center mb-2 text-sm text-slate-400">
+            <div className="flex justify-between items-center mb-2 text-sm text-blue-300">
               <span>{userData.name}</span>
               <span>Passo {currentQuestionIndex + 1} de {questions.length}</span>
             </div>
-            <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-blue-800 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500 ease-out"
                 style={{ width: `${progress}%` }}
@@ -386,7 +388,7 @@ const App: React.FC = () => {
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="max-w-3xl w-full animate-fade-in-up">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-slate-800 rounded-lg border border-slate-700">
+              <div className="p-3 bg-blue-900 rounded-lg border border-blue-800">
                 {getIconForPillar(currentQ.pillar)}
               </div>
               <div>
@@ -395,7 +397,7 @@ const App: React.FC = () => {
               </div>
             </div>
             
-            <p className="text-lg text-slate-300 mb-8 border-l-4 border-indigo-500 pl-4 py-1 italic">
+            <p className="text-lg text-blue-200 mb-8 border-l-4 border-indigo-500 pl-4 py-1 italic">
               "{currentQ.description}"
             </p>
 
@@ -404,15 +406,15 @@ const App: React.FC = () => {
                 <button
                   key={opt.level}
                   onClick={() => handleAnswer(opt.level)}
-                  className="w-full text-left p-6 rounded-xl bg-slate-800 border border-slate-700 hover:border-indigo-500 hover:bg-slate-750 transition-all group relative overflow-hidden"
+                  className="w-full text-left p-6 rounded-xl bg-blue-900 border border-blue-800 hover:border-indigo-500 hover:bg-blue-800 transition-all group relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-indigo-600/0 group-hover:bg-indigo-600/5 transition-colors" />
                   <div className="flex items-start gap-4">
-                    <div className="mt-1 w-6 h-6 rounded-full border-2 border-slate-600 group-hover:border-indigo-500 flex items-center justify-center shrink-0">
+                    <div className="mt-1 w-6 h-6 rounded-full border-2 border-blue-700 group-hover:border-indigo-500 flex items-center justify-center shrink-0">
                        <div className="w-3 h-3 rounded-full bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div>
-                      <p className="text-lg text-slate-200 group-hover:text-white transition-colors">
+                      <p className="text-lg text-blue-100 group-hover:text-white transition-colors">
                         {opt.text}
                       </p>
                     </div>
@@ -428,30 +430,30 @@ const App: React.FC = () => {
 
   if (step === 'report' && report) {
     return (
-      <div className="min-h-screen bg-slate-900 text-white p-4 md:p-8">
+      <div className="min-h-screen bg-blue-950 text-white p-4 md:p-8">
         <div className="max-w-4xl mx-auto space-y-8">
           
           {/* Hero Report Header */}
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 border border-slate-700 shadow-2xl relative overflow-hidden">
+          <div className="bg-gradient-to-br from-blue-900 to-blue-950 rounded-3xl p-8 border border-blue-800 shadow-2xl relative overflow-hidden">
              {/* Decorative background blob */}
              <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
              
              <div className="relative z-10 text-center">
                 <h1 className="text-3xl font-bold mb-2">🗺️ GPS de Carreira: {userData.name}</h1>
-                <p className="text-slate-400 mb-8">{userData.role}</p>
+                <p className="text-blue-300 mb-8">{userData.role}</p>
 
                 <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
-                  <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm min-w-[200px]">
-                    <div className="text-sm text-slate-400 uppercase tracking-wider mb-1">Nível Geral</div>
+                  <div className="bg-blue-950/50 p-6 rounded-2xl border border-blue-800 backdrop-blur-sm min-w-[200px]">
+                    <div className="text-sm text-blue-400 uppercase tracking-wider mb-1">Nível Geral</div>
                     <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
                       {report.levelLabel}
                     </div>
                   </div>
                   
-                  <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm min-w-[200px]">
-                    <div className="text-sm text-slate-400 uppercase tracking-wider mb-1">Score Maturidade</div>
+                  <div className="bg-blue-950/50 p-6 rounded-2xl border border-blue-800 backdrop-blur-sm min-w-[200px]">
+                    <div className="text-sm text-blue-400 uppercase tracking-wider mb-1">Score Maturidade</div>
                     <div className="text-4xl font-black text-white">
-                      {report.totalScore.toFixed(0)}<span className="text-xl text-slate-500 font-normal">/100</span>
+                      {report.totalScore.toFixed(0)}<span className="text-xl text-blue-500 font-normal">/100</span>
                     </div>
                   </div>
                 </div>
@@ -459,26 +461,26 @@ const App: React.FC = () => {
           </div>
 
           {/* Breakdown Table */}
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-lg">
+          <div className="bg-blue-900 rounded-2xl p-6 border border-blue-800 shadow-lg">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <Activity className="text-indigo-400" /> Detalhe por Pilar
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="text-slate-400 text-sm border-b border-slate-700">
+                  <tr className="text-blue-300 text-sm border-b border-blue-800">
                     <th className="py-3 px-4 font-medium">Pilar</th>
                     <th className="py-3 px-4 font-medium text-center">Nível Médio</th>
                     <th className="py-3 px-4 font-medium text-right">Contribuição (Pontos)</th>
                   </tr>
                 </thead>
-                <tbody className="text-slate-200">
+                <tbody className="text-blue-100">
                   {report.breakdown.map((item, idx) => (
-                    <tr key={idx} className="border-b border-slate-700/50 last:border-0 hover:bg-slate-700/30 transition-colors">
+                    <tr key={idx} className="border-b border-blue-800/50 last:border-0 hover:bg-blue-800/30 transition-colors">
                       <td className="py-4 px-4 flex items-center gap-3">
                          {getIconForPillar(item.pillar as Pillar)}
                          <span className="font-medium">{item.pillar}</span>
-                         <span className="text-xs text-slate-500 bg-slate-900 px-2 py-0.5 rounded-full">
+                         <span className="text-xs text-blue-300 bg-blue-950 px-2 py-0.5 rounded-full">
                            {/* Fix: Handle undefined WEIGHTS access */}
                            {((WEIGHTS[item.pillar as Pillar] || 0) * 100).toFixed(0)}%
                          </span>
@@ -494,7 +496,7 @@ const App: React.FC = () => {
                         </span>
                       </td>
                       <td className="py-4 px-4 text-right font-mono text-indigo-300">
-                        {item.weightedScore.toFixed(1)} <span className="text-slate-500 text-xs">/ {item.maxWeightedScore}</span>
+                        {item.weightedScore.toFixed(1)} <span className="text-blue-500 text-xs">/ {item.maxWeightedScore}</span>
                       </td>
                     </tr>
                   ))}
@@ -504,8 +506,8 @@ const App: React.FC = () => {
           </div>
 
           {/* AI Analysis Section */}
-          <div className="bg-slate-800 rounded-2xl p-8 border border-slate-700 shadow-lg">
-            <div className="prose prose-invert max-w-none prose-headings:text-indigo-400 prose-strong:text-white prose-li:text-slate-300">
+          <div className="bg-blue-900 rounded-2xl p-8 border border-blue-800 shadow-lg">
+            <div className="prose prose-invert max-w-none prose-headings:text-indigo-400 prose-strong:text-white prose-li:text-blue-200">
               <ReactMarkdown>
                 {report.geminiAnalysis}
               </ReactMarkdown>
